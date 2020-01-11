@@ -2,10 +2,16 @@ import { File } from "./File"
 
 export class ConfigOptions {
     public apiJsonPath: string
+    public apiJsonURLPath: string
     public envFilePath: string
     constructor (opt: { [prop: string]: any }) {
+        this.apiJsonURLPath = opt.apiJsonURLPath || Config.DEFAULT_API_JSON_URL_PATH
         this.apiJsonPath = opt.apiJsonPath || Config.DEFAULT_API_JSON_FILE_PATH
         this.envFilePath = opt.envFilePath || Config.DEFAULT_ENV_FILE_PATH
+    }
+    async setApiJsonURLPath (v: string) {
+        await File.writeLocaleConfig('apiJsonURLPath', v, Config.CONFIGURE_FILE_PATH)
+        this.apiJsonPath = v
     }
     async setApiJsonPath (v: string) {
         await File.writeLocaleConfig('apiJsonPath', v, Config.CONFIGURE_FILE_PATH)
@@ -22,6 +28,10 @@ export class Config {
      * 默认的 API 文档上的 doc.json 同步到本地的文件名
      */
     static readonly DEFAULT_API_JSON_FILE_PATH = 'api.swagger2struct.json'
+    /**
+     * 默认的 API doc.json 文件的 URL
+     */
+    static readonly DEFAULT_API_JSON_URL_PATH = 'docs/doc.json'
     /**
      * 默认的当前环境的配置文件路径
      */

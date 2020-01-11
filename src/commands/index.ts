@@ -4,6 +4,7 @@ import { File } from "../core/File"
 import { Config } from "../core/Config"
 
 export enum Commands {
+    configureApiURLPath = 'extension.configureApiURLPath',
     configureApiJsonFile = 'extension.configureApiJsonFile',
     configureEnvFile = 'extension.configureEnvFile',
     generate = 'extension.generate',
@@ -15,6 +16,7 @@ export enum Commands {
 
 export class CommandsRegister {
     static init(ctx: vscode.ExtensionContext) {
+        ctx.subscriptions.push(vscode.commands.registerCommand(Commands.configureApiURLPath, evt => this.configureApiURLPath(evt)))
         ctx.subscriptions.push(vscode.commands.registerCommand(Commands.configureApiJsonFile, evt => this.configureApiJsonFile(evt)))
         ctx.subscriptions.push(vscode.commands.registerCommand(Commands.configureEnvFile, evt => this.configureEnvFile(evt)))
         ctx.subscriptions.push(vscode.commands.registerCommand(Commands.generate, evt => this.generate(evt)))
@@ -22,6 +24,15 @@ export class CommandsRegister {
         ctx.subscriptions.push(vscode.commands.registerCommand(Commands.sync, evt => this.sync(evt)))
         ctx.subscriptions.push(vscode.commands.registerCommand(Commands.help, evt => this.help(evt)))
         ctx.subscriptions.push(vscode.commands.registerCommand(Commands.helloWorld, evt => this.helloWorld(evt)))
+    }
+    static async configureApiURLPath(evt: any) {
+        const val = await vscode.window.showInputBox({
+            value: Config.DEFAULT_API_JSON_URL_PATH,
+            prompt: '请输入 doc.json 文件的 URL(相对于 `dev.env.js` 中的 `BASE_URL`)'
+        })
+        if (!val) return
+        const options = await Config.getLocaleOptions()
+        options.setApiJsonURLPath(val)
     }
     static async chooseFile(filePath: string): Promise<string | undefined> {
         const projectPathResult = File.getProjectPath().expect()
@@ -57,8 +68,10 @@ export class CommandsRegister {
         console.log(opt)
         vscode.window.showInformationMessage('查看帮助文档 ???');
     }
-    static sync(evt: any): any {
-        vscode.window.showInformationMessage('同步 ...');
+    static async sync(evt: any) {
+        // const opt = await Config.getLocaleOptions()
+        // File.syncDocJson()
+        vscode.window.showInformationMessage('正在将  同步 ...');
     }
     static helloWorld(evt: any): any {
         vscode.window.showInformationMessage('hellloooooooooooooooo');
