@@ -2,6 +2,8 @@ import * as vscode from 'vscode'
 import { Result, ResultError, ErrorTypes } from './Result'
 import * as fs from 'fs-extra'
 import { join } from 'path'
+import * as http from 'http'
+import * as https from 'https'
 
 export class File {
     static getProjectPath (): Result<vscode.Uri> {
@@ -37,5 +39,42 @@ export class File {
         const projectPath = File.getProjectPath().expect()
         const data = JSON.stringify(optionsRes.data, null, '    ')
         fs.writeFile(join(projectPath.data.path, configureFilePath), data)
+    }
+    static async syncDocJson(envFilePath: string, apiJsonURLPath: string, apiJsonPath: string) {
+        const uri = File.getProjectPath().expect()
+        const envFile = await import(join(uri.data.path, envFilePath))
+        const requester = envFile.BASE_URL.indexOf('https://') !== -1 ? https : http
+        const apiJson = await File.getResource(requester, join(envFile.BASE_URL.substr(1, envFile.BASE_URL.length - 2), apiJsonURLPath))
+        const apiJsonFilePath = join(uri.data.path, apiJsonPath)
+        // 写入 apiJsonPath 对应的文件
+        await fs.writeFile(apiJsonFilePath, apiJson)
+        vscode.window.showInformationMessage('Api Json 文件写入成功, 位置: ' + apiJsonFilePath)
+        // 打开文件
+        await vscode.window.showTextDocument(vscode.Uri.file(apiJsonFilePath), { preview: false })
+        // 使用 gitlens 对比文件修改
+        vscode.commands.executeCommand('gitlens.diffWithPrevious', apiJsonFilePath)
+    }
+    static getResource (requester: typeof http | typeof https = http, url: string): Promise<string> {
+        return new Promise((resolve, reject) => {
+            requester.get(url, res => {
+                if (res.statusCode !== 200) {
+                    vscode.window.showErrorMessage('同步 doc.json 失败 -1')
+                    res.resume()
+                    reject()
+                } else {
+                    res.setEncoding('utf-8')
+                    let rawData = ''
+                    res.on('data', chunk => rawData += chunk)
+                    res.on('end', () => {
+                        try {
+                            resolve(rawData)
+                        } catch (err) {
+                            vscode.window.showErrorMessage('同步 doc.json 失败 -2')
+                            reject(err)
+                        }
+                    })
+                }
+            })
+        })
     }
 }

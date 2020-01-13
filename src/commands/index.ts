@@ -69,9 +69,9 @@ export class CommandsRegister {
         vscode.window.showInformationMessage('查看帮助文档 ???');
     }
     static async sync(evt: any) {
-        // const opt = await Config.getLocaleOptions()
-        // File.syncDocJson()
-        vscode.window.showInformationMessage('正在将  同步 ...');
+        const opt = await Config.getLocaleOptions()
+        await File.syncDocJson(opt.envFilePath, opt.apiJsonURLPath, opt.apiJsonPath)
+        // vscode.window.showInformationMessage('正在将  同步 ...');
     }
     static helloWorld(evt: any): any {
         vscode.window.showInformationMessage('hellloooooooooooooooo');
