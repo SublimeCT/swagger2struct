@@ -10,6 +10,7 @@
 		"Other"
 	],
 	"activationEvents": [
+		"onCommand:extension.generateStruct",
 		"onCommand:extension.configureApiURLPath",
 		"onCommand:extension.configureApiJsonFile",
 		"onCommand:extension.configureEnvFile",
@@ -24,43 +25,43 @@
 		"commands": [
 			{
 				"category": "Swagger to struct",
+				"command": "extension.generateStruct",
+				"title": "%cmd.generateStruct%"
+			},
+			{
+				"category": "Swagger to struct",
 				"command": "extension.configureApiURLPath",
-				"title": "configure API doc.json URL path(relative `BASE_URL` in dev.env.js)"
+				"title": "%cmd.configureApiURLPath%"
 			},
 			{
 				"category": "Swagger to struct",
 				"command": "extension.configureApiJsonFile",
-				"title": "configure API doc.json file"
+				"title": "%cmd.configureApiJsonFile%"
 			},
 			{
 				"category": "Swagger to struct",
 				"command": "extension.configureEnvFile",
-				"title": "configure current env file"
-			},
-			{
-				"category": "Swagger to struct",
-				"command": "extension.generate",
-				"title": "generate by schema"
+				"title": "%cmd.configureEnvFile%"
 			},
 			{
 				"category": "Swagger to struct",
 				"command": "extension.merge",
-				"title": "merge current struct with schema"
+				"title": "%cmd.merge%"
 			},
 			{
 				"category": "Swagger to struct",
 				"command": "extension.help",
-				"title": "Open help document"
+				"title": "%cmd.help%"
 			},
 			{
 				"category": "Swagger to struct",
 				"command": "extension.sync",
-				"title": "Sync API doc.json"
+				"title": "%cmd.sync%"
 			},
 			{
 				"category": "Swagger to struct",
 				"command": "extension.helloWorld",
-				"title": "Hello World"
+				"title": "%cmd.helloWorld%"
 			}
 		]
 	},
@@ -74,6 +75,7 @@
 	"devDependencies": {
 		"@types/fs-extra": "^8.0.1",
 		"@types/glob": "^7.1.1",
+		"@types/lodash": "^4.14.149",
 		"@types/mocha": "^5.2.7",
 		"@types/node": "^12.11.7",
 		"@types/vscode": "^1.41.0",
@@ -85,7 +87,8 @@
 		"vscode-test": "^1.2.2"
 	},
 	"dependencies": {
-		"fs-extra": "^8.1.0"
+		"fs-extra": "^8.1.0",
+		"lodash": "^4.17.15"
 	},
 	"config": {
 		"commitizen": {

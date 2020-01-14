@@ -1,0 +1,10 @@
+{
+    "cmd.generateStruct": "Generate struct file by `api.swagger2struct.json`",
+    "cmd.configureApiURLPath": "Configure API doc.json URL path(relative `BASE_URL` in dev.env.js)",
+    "cmd.configureApiJsonFile": "Configure API doc.json file",
+    "cmd.configureEnvFile": "Configure current env file",
+    "cmd.merge": "Merge current struct with schema",
+    "cmd.help": "Open help document",
+    "cmd.sync": "Sync API doc.json",
+    "cmd.helloWorld": "Hello World"
+}

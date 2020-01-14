@@ -50,9 +50,20 @@ export class File {
         await fs.writeFile(apiJsonFilePath, apiJson)
         vscode.window.showInformationMessage('Api Json 文件写入成功, 位置: ' + apiJsonFilePath)
         // 打开文件
-        await vscode.window.showTextDocument(vscode.Uri.file(apiJsonFilePath), { preview: false })
+        await vscode.window.showTextDocument(vscode.Uri.file(apiJsonFilePath), {
+            selection: new vscode.Range(new vscode.Position(1, 1), new vscode.Position(1, 1)),
+            preview: false
+        })
         // 使用 gitlens 对比文件修改
-        vscode.commands.executeCommand('gitlens.diffWithPrevious', apiJsonFilePath)
+        await vscode.commands.executeCommand('gitlens.diffWithPrevious')
+        // 聚焦到下一个修改
+        // await vscode.commands.executeCommand('workbench.action.editor.nextChange')
+        // await vscode.commands.executeCommand('workbench.action.compareEditor.nextChange')
+    }
+    static async getApiJson(apiJsonPath: string) {
+        const uri = File.getProjectPath().expect()
+        const apiJson = await import(join(uri.data.path, apiJsonPath))
+        return apiJson
     }
     static getResource (requester: typeof http | typeof https = http, url: string): Promise<string> {
         return new Promise((resolve, reject) => {
@@ -76,5 +87,8 @@ export class File {
                 }
             })
         })
+    }
+    static toStructFileName(struct: string): string {
+        return `${struct}.struct.js`
     }
 }
