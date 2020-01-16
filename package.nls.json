@@ -5,6 +5,5 @@
     "cmd.configureEnvFile": "Configure current env file",
     "cmd.merge": "Merge current struct with schema",
     "cmd.help": "Open help document",
-    "cmd.sync": "Sync API doc.json",
-    "cmd.helloWorld": "Hello World"
+    "cmd.sync": "Sync API doc.json"
 }

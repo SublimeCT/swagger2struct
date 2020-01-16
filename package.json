@@ -2,7 +2,9 @@
 	"name": "swagger2struct",
 	"displayName": "swagger2struct",
 	"description": "fetch swagger json and convert to struct.",
-	"version": "0.0.1",
+	"version": "1.0.0",
+	"publisher": "sven",
+	"repository": "https://github.com/SublimeCT/swagger2struct",
 	"engines": {
 		"vscode": "^1.41.0"
 	},
@@ -14,11 +16,9 @@
 		"onCommand:extension.configureApiURLPath",
 		"onCommand:extension.configureApiJsonFile",
 		"onCommand:extension.configureEnvFile",
-		"onCommand:extension.generate",
 		"onCommand:extension.merge",
 		"onCommand:extension.sync",
-		"onCommand:extension.help",
-		"onCommand:extension.helloWorld"
+		"onCommand:extension.help"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -57,11 +57,6 @@
 				"category": "Swagger to struct",
 				"command": "extension.sync",
 				"title": "%cmd.sync%"
-			},
-			{
-				"category": "Swagger to struct",
-				"command": "extension.helloWorld",
-				"title": "%cmd.helloWorld%"
 			}
 		]
 	},

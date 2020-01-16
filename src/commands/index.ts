@@ -26,7 +26,6 @@ export class CommandsRegister {
         ctx.subscriptions.push(vscode.commands.registerTextEditorCommand(Commands.merge, (...args) => this.merge(...args)))
         ctx.subscriptions.push(vscode.commands.registerCommand(Commands.sync, evt => this.sync(evt)))
         ctx.subscriptions.push(vscode.commands.registerCommand(Commands.help, evt => this.help(evt)))
-        ctx.subscriptions.push(vscode.commands.registerCommand(Commands.helloWorld, evt => this.helloWorld(evt)))
     }
     static async generateStruct(evt: any) {
         const schemaName = await vscode.window.showInputBox({
@@ -98,11 +97,6 @@ export class CommandsRegister {
         const opt = await Config.getLocaleOptions()
         await File.syncDocJson(opt.envFilePath, opt.apiJsonURLPath, opt.apiJsonPath)
         // vscode.window.showInformationMessage('正在将  同步 ...');
-    }
-    static async helloWorld(evt: any) {
-        const projectPathResult = File.getProjectPath().expect()
-        const data = await import(join(projectPathResult.data.path, 'src/config/struct.js'))
-        vscode.window.showInformationMessage('hellloooooooooooooooo');
     }
     static merge(textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, ...args: any): any {
         // vscode.window.showInformationMessage('merge ..');

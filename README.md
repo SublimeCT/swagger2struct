@@ -1,31 +1,45 @@
-# swagger2struct README
+# swagger2struct extension
 
-This is the README for your extension "swagger2struct". After writing up a brief description, we recommend including the following sections.
+## Start
+[doc](https://code.visualstudio.com/api/get-started/your-first-extension)
+
+## Install
+```bash
+code --install-extension swagger2struct-1.0.0.vsix
+```
+
+## Packaged
+初次打包需要先安装 vsce
+```bash
+yarn global add vsce
+```
+
+```bash
+vsce package --yarn
+```
+
+## 参考
+- [vscode extension API](https://code.visualstudio.com/api/get-started/your-first-extension)
+- [VSCode插件开发全攻略](http://blog.haoji.me/vscode-plugin-overview.html)
+- [vscode extension 中文文档](https://www.cntofu.com/book/98/md/%E6%89%A9%E5%B1%95/%E5%AE%89%E8%A3%85-%E6%89%A9%E5%B1%95.md)
+
+## Commands
+命令 | 描述 | 未完成部分
+--- |--- |---
+`onCommand:extension.generateStruct` | 通过 `api.swagger2struct.json` 生成结构文件 | 
+`onCommand:extension.configureApiURLPath` | 配置 API `doc.json` URL(相对于 `dev.env.js` 中的 `BASE_URL` 保存的路径值) | 
+`onCommand:extension.configureApiJsonFile` | 配置 API `doc.json` 文件路径 | 
+`onCommand:extension.configureEnvFile` | 配置当前使用的环境配置文件 | 
+`onCommand:extension.merge` | 在 `api.swagger2struct.json` 中查找当前结构并与当前结构文件合并 | 
+`onCommand:extension.sync` | 查看帮助文档 | 
+`onCommand:extension.help` | 同步后端的 API doc.json 到本地 | 
 
 ## Features
-
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
-
-For example if there is an image subfolder under your extension project workspace:
-
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+...
 
 ## Requirements
 
 If you have any requirements or dependencies, add a section describing those and how to install and configure them.
-
-## Extension Settings
-
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
-This extension contributes the following settings:
-
-* `myExtension.enable`: enable/disable this extension
-* `myExtension.thing`: set to `blah` to do something
 
 ## Known Issues
 
@@ -37,29 +51,4 @@ Users appreciate release notes as you update your extension.
 
 ### 1.0.0
 
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
------------------------------------------------------------------------------------------------------------
-
-## Working with Markdown
-
-**Note:** You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+CMD+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (macOS) to see a list of Markdown snippets
-
-### For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+- 初步完成保存配置项及通过 `API` `doc.json` 生成 `struct` 文件

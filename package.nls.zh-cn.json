@@ -5,6 +5,5 @@
     "cmd.configureEnvFile": "配置当前使用的环境配置文件",
     "cmd.merge": "在 `api.swagger2struct.json` 中查找当前结构并与当前结构文件合并",
     "cmd.help": "查看帮助文档",
-    "cmd.sync": "同步后端的 API doc.json 到本地",
-    "cmd.helloWorld": "你好, 世界"
+    "cmd.sync": "同步后端的 API doc.json 到本地"
 }
