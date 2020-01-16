@@ -4,6 +4,7 @@ import * as fs from 'fs-extra'
 import { join } from 'path'
 import * as http from 'http'
 import * as https from 'https'
+import { ApiJson } from './Struct'
 
 export class File {
     static getProjectPath (): Result<vscode.Uri> {
@@ -60,7 +61,7 @@ export class File {
         // await vscode.commands.executeCommand('workbench.action.editor.nextChange')
         // await vscode.commands.executeCommand('workbench.action.compareEditor.nextChange')
     }
-    static async getApiJson(apiJsonPath: string) {
+    static async getApiJson(apiJsonPath: string): Promise<ApiJson> {
         const uri = File.getProjectPath().expect()
         const apiJson = await import(join(uri.data.path, apiJsonPath))
         return apiJson
@@ -90,5 +91,15 @@ export class File {
     }
     static toStructFileName(struct: string): string {
         return `${struct}.struct.js`
+    }
+    static async writeStructFile(template: string, structName: string) {
+        const uri = File.getProjectPath().expect()
+        const savePath = join(uri.data.path, `src/config/${structName}.struct.js`)
+        await fs.writeFile(savePath, template)
+        vscode.window.showInformationMessage('struct 文件生成成功!')
+        // 打开文件
+        await vscode.window.showTextDocument(vscode.Uri.file(savePath), {
+            preview: false
+        })
     }
 }

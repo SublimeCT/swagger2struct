@@ -1,0 +1,321 @@
+import * as _ from 'lodash'
+
+const day = (ts: number) => {
+    return {
+        unix () {}
+    }
+}
+
+const math = {
+    toPrice(v: any) {},
+    toReqPrice(v: any) {},
+    toRatio(v: any) {},
+    toReqRatio(v: any) {},
+}
+
+export class Struct {
+    /**
+     * 对于 API models.Range 结构
+     * @version 9.7.0
+     */
+    static BASE_RANGE = { base: 0, max: 0, min: 0 }
+    static get baseRange() { return _.cloneDeep(Struct.BASE_RANGE) }
+    /**
+     * 当前资源结构的基础配置
+     */
+    options = {
+        detailsImageField: null,
+        /**
+         * 资源请求字段
+         * @note 该字段仅作为功能性补充, 大多数情况下应该使用 `Fields.includeChildFields` 代替
+         */
+        fields: {
+            [Field.METHOD_LIST]: '',
+            [Field.METHOD_GET]: ''
+        },
+        /**
+         * 当前数据的唯一标识
+         * @note 注意: 在 options 的代理对象中的 swapId 引用了这个 key, 所以至少应该保证这个 swapId 不会错
+         */
+        key: null,
+        /**
+         * 在 api 请求中的 key
+         * @type {string}
+         * @note 用于生成当前资源的 CURD 请求函数, 若不存在该属性则无法使用
+         * ## Usage
+         * `apiKey === 'areas'`
+         *
+         * - create: POST `/areas`
+         * - delete: DELETE `/areas/${req.id}`
+         * - edit: POST `/areas/${req.id}`
+         * - select: POST `/areas/${req.id}`
+         * - list: POST `/areas`
+         */
+        apiKey: '',
+        /**
+         * 当前资源的唯一标识(目前没有使用场景)
+         * @version 9.6.1
+         */
+        resourceKey: ''
+    }
+    /**
+     * options proxy 中的预设值
+     * @note 由于子类中该属性是 `static`, 所以只能用实例的 `options` 属性访问这个代理对象
+     */
+    optionsProxyFields = {
+        /**
+         * 当前资源的 ID 字段名
+         * @note 在 `this.$tool().initResData()` 中使用, 用于初始化当前资源 ID 字段
+         */
+        swapId() { return 'id' },
+        timeRangeField() { return 'addtime' },
+        errHandle() { '获取失败' }
+    }
+    rules = null
+    temp = null
+    struct = {}
+
+    static instance = null
+    constructor(options: object, fields: object) {
+        // this.setOptions(options)
+        // Object.assign(this.options, options)
+        // for (const key in fields) {
+        //     this.struct[key] = new Field(key, fields[key])
+        // }
+    }
+}
+
+export class Rule {
+    /**
+     * 应用外推送的标题
+     * 表示 schedule 任务的名字，由 schedule-api 在用户成功创建 schedule 任务后返回，不得超过 255 字节，由汉字、字母、数字、下划线组成。
+     */
+    static PUBLISH_TITLE_REGEXP = /^[a-zA-Z0-9_\u4e00-\u9fa5]+$/
+    /**
+     * ≥ 0 的整数
+     */
+    static UNSIGNED_POSITIVE_INTEGER_WITH_ZERO = /^\d+$/
+    static UNSIGNED_POSITIVE_INTEGER = /^[1|2|3|4|5|6|7|8|9]\d?$/
+    /**
+     * 手机号码类型字段输入验证正则
+     */
+    static MOBILE_REGEXP = /^((0\d{2,3}-?\d{7,8})|(1[3|4|5|6|7|8|9][0-9]\d{8}))$/
+    static hasOneRule(args: any) {
+        // return (rule, value, callback) => {
+        //     if (Struct.instance.resource[key].length === 0) {
+        //         callback(new Error(`请选择${label}`))
+        //     } else {
+        //         callback()
+        //     }
+        // }
+    }
+    static isInSortFieldRange(args: any) {
+        // return (rule, value, callback) => {
+        //     const num = Number(value)
+        //     if (isNaN(num) || num < 1 || num > 999) {
+        //         callback(new Error('请输入 1 ~ 999 之间的整数'))
+        //     } else {
+        //         callback()
+        //     }
+        // }
+    }
+    static validateBaseRange() {
+        // let { min, max, base } = value
+        // min = Number(min)
+        // max = Number(max)
+        // base = Number(base)
+        // if (isNaN(min) || min < 0 || !Number.isInteger(min)) return callback('请输入正确的最小值')
+        // if (isNaN(max) || max < 0 || !Number.isInteger(max)) return callback('请输入正确的最大值')
+        // if (isNaN(base) || base < 0) return callback('请输入正确的基数')
+        // if (min > max) return callback('最小值不能大于最大值')
+        // callback()
+    }
+    static required({ label }: { label: string }) { return { required: true, message: `请填写${label}`, trigger: 'blur' } }
+    static hasOne(field: { label: string }) { return { validator: Rule.hasOneRule(field), trigger: 'blur' } }
+    static publishTitle({ label }: { label: string }) { return { pattern: Rule.PUBLISH_TITLE_REGEXP, message: `${label}中只能输入汉字、字母、数字、下划线`, trigger: 'blur' } }
+    static isInteger() { return { pattern: Rule.UNSIGNED_POSITIVE_INTEGER, message: '请输入 >0 的整数', trigger: 'blur' } }
+    static isIntegerWithZero() { return { pattern: Rule.UNSIGNED_POSITIVE_INTEGER_WITH_ZERO, message: '请输入 ≥0 的整数', trigger: 'blur' } }
+    static inSortFieldRange(field: { label: string }) { return { validator: Rule.isInSortFieldRange(field), trigger: 'blur' } }
+    static isMobile(field: { label: string }) { return { regexp: Rule.MOBILE_REGEXP, trigger: 'blur' } }
+    static baseRange(field: { label: string }) { return { validator: Rule.validateBaseRange, trigger: 'blur' } }
+}
+
+/**
+ * 数据处理策略
+ */
+export class Strategy {
+    /**
+     * 禁用该字段
+     */
+    static EFFECT_DISABLED = Symbol('EFFECT_DISABLED')
+    static number(val = 0) { return Number(val) }
+    static trim(val = '') { return val.trim() }
+    static detailImages(val: any) { return val.length ? JSON.stringify(val) : undefined }
+    static jsonStr(val: any) { return JSON.stringify(val) }
+    static splitByComma(val: any) { return val ? val.split(',') : [] }
+    static joinWithComma(val: any) { return val.join(',') }
+    static wrapArray(val: any) { return val ? [val] : [] }
+    static defaultEmptyString(val: any) { return val || '' }
+    /**
+     * 若未填写则使用 null, 这将会在请求时过滤掉这个字段, 因为请求参数中如果存在 null / undefined 值将会自动过滤
+     * @param {*} val
+     */
+    static defaultNull(val: any) { return val || null }
+    static timestamp(val: any) { return val ? day(val).unix() : 0 }
+    static timestampOrNegativeOne(val: any) { return val ? day(val).unix() : -1 }
+    static date(val: any) { return val === 0 ? 0 : day(val * 1000) }
+    static dateOrNegativeOneToNull(val: any) { return (val === 0 || val === -1) ? null : day(val * 1000) }
+    static _parseJson(val: any, defaultValue: any = []) {
+        let result = defaultValue
+        if (!val) return result
+        try {
+            result = JSON.parse(val)
+        } catch (e) { }
+        return result
+    }
+    static jsonToArray(val: any) { return Strategy._parseJson(val, []) }
+    static jsonToObject(val: any) { return Strategy._parseJson(val, {}) }
+    static toPrice(val: any) { return math.toPrice(val || 0) }
+    static toReqPrice(val: any) { return math.toReqPrice(val || 0) }
+    static toRatio(val: any) { return math.toRatio(val || 0) }
+    static toReqRatio(val: any) { return math.toReqRatio(val || 0) }
+    /**
+     * 转换为 API 中的 model.Range 结构
+     * @version 9.7.0
+     * @param {object} val
+     */
+    static toBaseRange(val: any) {
+        const v = _.cloneDeep(val)
+        v.base = math.toPrice(v.base)
+        return v
+    }
+    static toReqBaseRange(val: any) {
+        const v = _.cloneDeep(val)
+        v.base = math.toReqPrice(v.base)
+        v.max = Number(v.max)
+        v.min = Number(v.min)
+        return JSON.stringify(v)
+    }
+    static toReqBaseIntegerRange(val: any) {
+        const v = _.cloneDeep(val)
+        v.base = Number(v.base)
+        v.max = Number(v.max)
+        v.min = Number(v.min)
+        return JSON.stringify(v)
+    }
+}
+
+/**
+ * model 中每一项的结构
+ * @author sven<hellosc@qq.com>
+ * @version 3.9.2
+ * @created 2019-08-15 15:49:45
+ */
+export class Field {
+    /**
+     * 字段名
+     * @version 7.1.0
+     */
+    label = ''
+    /**
+     * 默认(初始)值
+     * @version 7.1.0
+     */
+    val = undefined
+    /**
+     * DOM 渲染类型
+     * @version 7.1.0
+     */
+    dom = 'input'
+    /**
+     * input 原生属性 max length
+     * @version 7.1.0
+     */
+    maxlength = undefined
+    /**
+     * 请求参数转换策略
+     * @version 7.1.0
+     */
+    reqStrategy = []
+    /**
+     * 详情接口返回数据转换策略
+     * @version 7.1.0
+     */
+    resStrategy = []
+    /**
+     * 表单的 placeholder, 默认填充为 请填写 `this.label`
+     * @version 8.1.0
+     */
+    placeholder: string = ''
+    /**
+     * 该字段包含的子字段, 用于请求子结构数据
+     * @version 9.0.0
+     * @description `struct.js` 并未实现嵌套子结构, 大多数情况下不适合使用嵌套子结构
+     * @description 若 methods 中有当前请求的 `method`, 则在 `fields` 中加入`child fields`
+     */
+    includeChildFields = null
+    /**
+     * 当前字段关联的子结构, 一般为枚举值
+     * @version 9.0.0
+     */
+    relationStruct = null
+    /**
+     * v-input-filter 指令中的数值范围
+     * @note 使用数学符号表示
+     * @example [0,9999) 表示从 0 到 9999, 包含 0 但不包含 9999
+     * @example <el-input v-model="resource.interest" v-input-filter="$_edit_getInputFilter('interest')" class="base-form-input" />
+     */
+    inputFilterRange = null
+    /**
+     * v-input-filter 指令中的保留位数
+     */
+    inputFilterFixedCount = 2
+    /**
+     * v-input-filter 指令中的数值检测策略
+     */
+    inputFilterStrategy = 'NaNFilter'
+    /**
+     * 验证规则
+     * @version 7.1.0
+     */
+    rules = []
+    methods: Symbol[] = []
+    // 字段类型
+    static TYPE_DISABLED = Symbol('TYPE_DISABLED') // 表示不再新增/编辑页表单中显示的字段
+    // 表示请求方式
+    static METHOD_GET = Symbol('METHOD_GET')
+    /**
+     * 表示不请求这个字段, 但是在生成 `resource` 时使用定义好的 val 作为默认值
+     * @note 应用场景: 密码字段不需要获取
+     */
+    static METHOD_NO_GET = Symbol('METHOD_NO_GET')
+    static METHOD_LIST = Symbol('METHOD_LIST')
+    /**
+     * 会员中需要获取的所有字段
+     * @description 主要用于在多个接口中的 `includeChildFields` 中使用, 作为 `user` 的子字段
+     * @description 由于各页面需要的子字段未知, 所以这里包含完全的子字段
+     */
+    static CHILD_FIELDS_USER = ['addtime', 'teacher', 'qinyou_level', 'vip_type', 'agent_city_code', 'agent_district_code', 'agent_province_code', 'num', 'birthday', 'agent_city', 'agent_district', 'agent_province', 'qindian_not_recharge', 'referrerid', 'total_promote', 'total_promote_downline', 'total_promote_online', 'expire', 'city', 'code', 'country', 'headimg', 'id', 'level', 'medals.medalid', 'mobile', 'name', 'openid', 'parentid', 'password', 'passwordrand', 'points', 'province', 'district', 'qin_dian', 'reward', 's_count', 's_lasttime', 'sex', 'uptime', 'userid']
+    static CHILD_FIELDS_EMPLOYEE = ['is_employee', 'nickname', 'id', 'employeeid']
+    static CHILD_FIELDS_BUY = ['account', 'name']
+    static CHILD_FIELDS_SELL = ['account', 'name', 'mobile']
+
+    constructor(key: string, params: object) {
+        // TODO 增加默认值处理
+        Object.assign(this, { key, ...params })
+        // 初始化 methods 字段
+        if (!Array.isArray(this.methods)) this.methods = []
+        if (Reflect.has(this, 'val') && this.val !== undefined && !this.methods.includes(Field.METHOD_GET) && !this.methods.includes(Field.METHOD_NO_GET)) {
+            this.methods.push(Field.METHOD_GET)
+        }
+        // 生成默认 placeholder
+        this.placeholder = this.placeholder || `请填写${this.label}`
+    }
+    inMethod(method: Symbol) {
+        return this.methods.includes(method)
+    }
+}
+
+// //////////////////////////////////////////////////////////////
+// ////////////////////////////////////////     扩展部分        //
+// //////////////////////////////////////////////////////////////

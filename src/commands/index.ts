@@ -3,6 +3,7 @@ import { join, relative, extname } from 'path'
 import { File } from "../core/File"
 import { Config } from "../core/Config"
 import * as _ from 'lodash'
+import { Struct, ApiModel } from "../core/Struct"
 
 export enum Commands {
     generateStruct = 'extension.generateStruct',
@@ -31,18 +32,24 @@ export class CommandsRegister {
         const schemaName = await vscode.window.showInputBox({
             prompt: '请输入 schema 名称'
         })
-        if (!schemaName) return
+        const schemaChineseName = await vscode.window.showInputBox({
+            prompt: '请输入资源名称(中文)'
+        })
+        if (!schemaName || !schemaChineseName) return
         const opt = await Config.getLocaleOptions()
         const apiJson = await File.getApiJson(opt.apiJsonPath)
-        const apiModel = _.get(apiJson, ['definitions', schemaName])
+        const apiModel = apiJson.definitions[schemaName].properties
         const defaultStructNameParts = schemaName.split('.')
         const defaultStructName = defaultStructNameParts[defaultStructNameParts.length - 1]
         const structName = await vscode.window.showInputBox({
             value: defaultStructName,
-            prompt: `请输入 struct 名称, 最终将生成 src/config/name.struct.js`,
+            prompt: `请输入 struct 名称, 最终将生成 src/config/Name.struct.js`,
         })
         if (!structName) return
-        console.log(apiModel, structName)
+        const struct = new Struct(structName, schemaName, apiModel, schemaChineseName)
+        const template = struct.generate()
+        await File.writeStructFile(template, structName)
+        // console.log(struct, template, apiModel, structName)
     }
     static async configureApiURLPath(evt: any) {
         const val = await vscode.window.showInputBox({
@@ -92,7 +99,9 @@ export class CommandsRegister {
         await File.syncDocJson(opt.envFilePath, opt.apiJsonURLPath, opt.apiJsonPath)
         // vscode.window.showInformationMessage('正在将  同步 ...');
     }
-    static helloWorld(evt: any): any {
+    static async helloWorld(evt: any) {
+        const projectPathResult = File.getProjectPath().expect()
+        const data = await import(join(projectPathResult.data.path, 'src/config/struct.js'))
         vscode.window.showInformationMessage('hellloooooooooooooooo');
     }
     static merge(textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, ...args: any): any {
