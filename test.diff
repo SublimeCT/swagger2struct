@@ -1,0 +1,233 @@
+{
+    definitions: {
+        models.Area: {
+            properties: {
+            ✅ bonus: {"description":"奖金设置 key 天数 v 奖励比例x10000","type":"object","$ref":"#/definitions/models.INTM"}
+            }
+        }
+        models.MoneyRecord: {
+            properties: {
+                action: {
+                    description: "动作 recharge 充值 trans 转移 use 使用 income 收入 punish 惩罚\namount:recharge 会员管理-金币赠送\ncode:trans,use 激活码管理-PIN管理\ncoupon:trans,use 排单码管理-PIN管理" 🚀 "动作 recharge 充值 trans 转移 use 使用 income 收入 punish 惩罚 reward 奖励\namount:recharge 会员管理-金币赠送\ncode:trans,use 激活码管理-PIN管理\ncoupon:trans,use 排单码管理-PIN管理"
+                ❌ enum: ["recharge","trans","use","income"]
+                }
+                type: {
+                ❌ enum: ["amount","subsidy","code","coupon","xiong"]
+                }
+            }
+        }
+        models.Order: {
+            properties: {
+            ✅ matchstatus: {"description":"匹配状态 0 待匹配 1 已匹配","type":"integer"}
+            }
+        }
+        models.SysConfig: {
+            properties: {
+            ✅ ex_activity: {"description":"激活数基","type":"integer"}
+            ✅ ex_day_activity: {"description":"每日激活数基","type":"integer"}
+            ✅ ex_day_buy: {"description":"今日预购基","type":"integer"}
+            ✅ ex_day_regist: {"description":"每日注册数基","type":"integer"}
+            ✅ ex_day_sell: {"description":"今日挂卖基","type":"integer"}
+            ✅ ex_regist: {"description":"注册数基","type":"integer"}
+            ✅ registing: {"description":"注册中","type":"boolean"}
+            ✅ running: {"description":"运行中","type":"boolean"}
+            ✅ start: {"description":"系统运行开始时间","type":"integer"}
+            }
+        }
+        models.User: {
+            properties: {
+            ✅ subactivity: {"description":"激活的下级数量","type":"integer"}
+            ✅ subtotalbonus: {"description":"接受的下级奖金数量","type":"integer"}
+            }
+        }
+        records.ListResp: {
+            properties: {
+            ✅ confirmnum: {"description":"收款数","type":"integer"}
+            ✅ paynum: {"description":"打款数","type":"integer"}
+            }
+        }
+    ✅ models.INTM: {"type":"object","additionalProperties":{}}
+    }
+    paths: {
+        /areas: {
+            post: {
+                parameters: [
+                ✅ 13: {"type":"models.INTM","description":"奖金设置 key 天数 v 奖励比例x10000","name":"bonus","in":"formData"}
+                ]
+            }
+        }
+        /areas/{id}: {
+            post: {
+                parameters: [
+                ✅ 15: {"type":"models.INTM","description":"奖金设置 key 天数 v 奖励比例x10000","name":"bonus","in":"formData"}
+                ]
+            }
+        }
+        /managers/trans: {
+            post: {
+                parameters: [
+                    2: {
+                        description: "类型 amount 余额 code 激活码 coupon 购物券" 🚀 "类型 amount 余额 code 激活码 coupon 购物券 cache 缓冲区"
+                        enum: [
+                            2: "coupon" 🚀 "cache"
+                        ✅ 3: "coupon"
+                        ]
+                    }
+                ]
+            }
+        }
+        /sysconfigs/{id}: {
+            post: {
+                parameters: [
+                    1: {
+                        description: "每日运行时间" 🚀 "系统运行开始时间"
+                        name: "run" 🚀 "start"
+                        type: "models.Range" 🚀 "integer"
+                    }
+                    2: {
+                        description: "每日注册时间 base 为每日注册人数" 🚀 "每日运行时间"
+                        name: "regist" 🚀 "run"
+                    }
+                    3: {
+                        description: "每天激活人数限制" 🚀 "每日注册时间 base 为每日注册人数"
+                        name: "activity" 🚀 "regist"
+                        type: "integer" 🚀 "models.Range"
+                    }
+                    4: {
+                        description: "激活账号消耗激活码数" 🚀 "每天激活人数限制"
+                        name: "codenum" 🚀 "activity"
+                    }
+                    5: {
+                        description: "余额提现时间限制" 🚀 "激活账号消耗激活码数"
+                        name: "amountwithdrawlimit" 🚀 "codenum"
+                        type: "boolean" 🚀 "integer"
+                    }
+                    6: {
+                        description: "余额每日提现时间" 🚀 "余额提现时间限制"
+                        name: "amountwithdrawtime" 🚀 "amountwithdrawlimit"
+                        type: "models.Range" 🚀 "boolean"
+                    }
+                    7: {
+                        description: "余额提现额度" 🚀 "余额每日提现时间"
+                        name: "amountwithdrawamount" 🚀 "amountwithdrawtime"
+                    }
+                    8: {
+                        description: "余额提现手续费率 x10000" 🚀 "余额提现额度"
+                        name: "amountwithdrawpoundage" 🚀 "amountwithdrawamount"
+                        type: "integer" 🚀 "models.Range"
+                    }
+                    9: {
+                        description: "余额提现手续费" 🚀 "余额提现手续费率 x10000"
+                        name: "amountwithdrawpoundagemodelsrange" 🚀 "amountwithdrawpoundage"
+                        type: "models.Range" 🚀 "integer"
+                    }
+                    10: {
+                        description: "补贴提现时间限制" 🚀 "余额提现手续费"
+                        name: "subsidywithdrawlimit" 🚀 "amountwithdrawpoundagemodelsrange"
+                        type: "boolean" 🚀 "models.Range"
+                    }
+                    11: {
+                        description: "补贴每日提现时间" 🚀 "补贴提现时间限制"
+                        name: "subsidywithdrawtime" 🚀 "subsidywithdrawlimit"
+                        type: "models.Range" 🚀 "boolean"
+                    }
+                    12: {
+                        description: "补贴提现额度" 🚀 "补贴每日提现时间"
+                        name: "subsidywithdrawamount" 🚀 "subsidywithdrawtime"
+                    }
+                    13: {
+                        description: "补贴提现手续费率 x10000" 🚀 "补贴提现额度"
+                        name: "subsidywithdrawpoundage" 🚀 "subsidywithdrawamount"
+                        type: "integer" 🚀 "models.Range"
+                    }
+                    14: {
+                        description: "补贴提现手续费" 🚀 "补贴提现手续费率 x10000"
+                        name: "subsidywithdrawpoundagemodelsrange" 🚀 "subsidywithdrawpoundage"
+                        type: "models.Range" 🚀 "integer"
+                    }
+                    15: {
+                        description: "打款超时时间" 🚀 "补贴提现手续费"
+                        name: "paytime" 🚀 "subsidywithdrawpoundagemodelsrange"
+                        type: "integer" 🚀 "models.Range"
+                    }
+                    16: {
+                        description: "确认超时时间" 🚀 "打款超时时间"
+                        name: "confirmtime" 🚀 "paytime"
+                    }
+                    17: {
+                        description: "每日所有用户提现数" 🚀 "确认超时时间"
+                        name: "dayall" 🚀 "confirmtime"
+                    }
+                    18: {
+                        description: "每日所有用户领导金额" 🚀 "每日所有用户提现数"
+                        name: "datallparent" 🚀 "dayall"
+                    }
+                    19: {
+                        description: "每日每个用户提现单数" 🚀 "每日所有用户领导金额"
+                        name: "withdrawday" 🚀 "datallparent"
+                    }
+                    20: {
+                        description: "每日每个用户领导金额" 🚀 "每日每个用户提现单数"
+                        name: "dayparent" 🚀 "withdrawday"
+                    }
+                    21: {
+                        description: "登录失败提示语" 🚀 "每日每个用户领导金额"
+                        name: "tip" 🚀 "dayparent"
+                        type: "string" 🚀 "integer"
+                    }
+                ✅ 22: {"type":"integer","description":"每日激活数基","name":"ex_day_activity","in":"formData"}
+                ✅ 23: {"type":"integer","description":"激活数基","name":"ex_activity","in":"formData"}
+                ✅ 24: {"type":"integer","description":"每日注册数基","name":"ex_day_regist","in":"formData"}
+                ✅ 25: {"type":"integer","description":"注册数基","name":"ex_regist","in":"formData"}
+                ✅ 26: {"type":"integer","description":"今日预购基","name":"ex_day_buy","in":"formData"}
+                ✅ 27: {"type":"integer","description":"今日挂卖基","name":"ex_day_sell","in":"formData"}
+                ✅ 28: {"type":"string","description":"登录失败提示语","name":"tip","in":"formData"}
+                ]
+            }
+        }
+        /uploads: {
+            post: {
+                parameters: [
+                    0: {
+                    ✅ enum: ["png","gif","jpeg","jpg"]
+                    }
+                ]
+            }
+        }
+        /users/{id}: {
+            post: {
+                parameters: [
+                    11: {
+                        description: "上级ID" 🚀 "上级"
+                        name: "parentid" 🚀 "parent"
+                    }
+                    12: {
+                        description: "上级" 🚀 "状态 -1 封号 0 未激活 1 激活"
+                        name: "parent" 🚀 "status"
+                        type: "string" 🚀 "integer"
+                    ✅ enum: [-1,0,1]
+                    }
+                    13: {
+                        description: "上级姓名" 🚀 "B 钱包"
+                        name: "parentname" 🚀 "b"
+                        type: "string" 🚀 "integer"
+                    }
+                    14: {
+                        description: "上级手机" 🚀 "自动购买 天数 4 7"
+                        name: "parentmobile" 🚀 "autoorderday"
+                        type: "string" 🚀 "integer"
+                    }
+                    15: {
+                        description: "状态 -1 封号 0 未激活 1 激活" 🚀 "自动购买金额"
+                    ❌ enum: [-1,0,1]
+                        name: "status" 🚀 "autoorderamount"
+                    }
+                ❌ 16: {"type":"integer","description":"B 钱包","name":"b","in":"formData"}
+                ❌ 17: {"type":"integer","description":"自动购买 天数 4 7","name":"autoorderday","in":"formData"}
+                ❌ 18: {"type":"integer","description":"自动购买金额","name":"autoorderamount","in":"formData"}
+                ]
+            }
+        }
+    ✅ /records/{id}/timeout: {"post":{"security":[{"ApiKey":[]},{"AppUser":[]}],"description":"records.timeout","consumes":["application/x-www-form-urlencoded"],"produces":["application/json"],"tags":["records 交易"],"summary":"超时处理","operationId":"records.timeout","parameters":[{"type":"string","description":"id","name":"id","in":"path","required":true},{"enum":["enter","rollback"],"type":"string","description":"动作 enter 确认 rollback 回滚","name":"action","in":"formData","required":true}],"responses":{"200":{"description":"OK","schema":{"$ref":"#/definitions/models.Record"}},"10002":{"description":"状态不对","schema":{"$ref":"#/definitions/global.RespModel"}}}}}
+    }
+}

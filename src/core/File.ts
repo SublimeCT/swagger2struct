@@ -1,6 +1,10 @@
 import * as vscode from 'vscode'
 import { Result, ResultError, ErrorTypes } from './Result'
 import * as fs from 'fs-extra'
+import diff from '../Diff'
+import * as day from 'dayjs'
+// import { diff } from 'deep-object-diff'
+// const diff = require('variable-diff')
 import { join } from 'path'
 import * as http from 'http'
 import * as https from 'https'
@@ -28,7 +32,7 @@ export class File {
             result.data = JSON.parse(content.toString())
             return result
         } catch (err) {
-            console.log('read configure file failed', err)
+            console.log('warning: read configure file failed, so use default config', err)
             result.err = new ResultError(ErrorTypes.get_configure_file_failed)
             return result
         }
@@ -47,19 +51,32 @@ export class File {
         const requester = envFile.BASE_URL.indexOf('https://') !== -1 ? https : http
         const apiJson = await File.getResource(requester, join(envFile.BASE_URL.substr(1, envFile.BASE_URL.length - 2), apiJsonURLPath))
         const apiJsonFilePath = join(uri.data.path, apiJsonPath)
+        // 先保存修改前的 `api.swagger2struct.json`
+        const origin = await import(apiJsonFilePath)
         // 写入 apiJsonPath 对应的文件
         await fs.writeFile(apiJsonFilePath, apiJson)
         vscode.window.showInformationMessage('Api Json 文件写入成功, 位置: ' + apiJsonFilePath)
         // 打开文件
-        await vscode.window.showTextDocument(vscode.Uri.file(apiJsonFilePath), {
-            selection: new vscode.Range(new vscode.Position(1, 1), new vscode.Position(1, 1)),
-            preview: false
-        })
+        // await vscode.window.showTextDocument(vscode.Uri.file(apiJsonFilePath), {
+        //     selection: new vscode.Range(new vscode.Position(1, 1), new vscode.Position(1, 1)),
+        //     preview: false
+        // })
         // 使用 gitlens 对比文件修改
-        await vscode.commands.executeCommand('gitlens.diffWithPrevious')
+        // await vscode.commands.executeCommand('gitlens.diffWithPrevious')
         // 聚焦到下一个修改
         // await vscode.commands.executeCommand('workbench.action.editor.nextChange')
         // await vscode.commands.executeCommand('workbench.action.compareEditor.nextChange')
+        // 使用 variable-diff
+        // console.log(diff, JSON.parse(apiJson))
+        const diffResult = diff(origin, JSON.parse(apiJson), { indent: '    ', newLine: '\n', color: true })
+        console.log('diff result:\n\n', diffResult.text)
+        const diffFileName = 'mark.swagger2struct.' + day().format('YYYY-MM-DD_HH-mm-ss') + '.diff'
+        const diffFilePath = join(uri.data.path, diffFileName)
+        await fs.writeFile(diffFilePath, diffResult.text)
+        await vscode.window.showTextDocument(vscode.Uri.file(diffFilePath), {
+            selection: new vscode.Range(new vscode.Position(1, 1), new vscode.Position(1, 1)),
+            preview: false
+        })
     }
     static async getApiJson(apiJsonPath: string): Promise<ApiJson> {
         const uri = File.getProjectPath().expect()

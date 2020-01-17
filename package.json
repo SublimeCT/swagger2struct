@@ -82,8 +82,12 @@
 		"vscode-test": "^1.2.2"
 	},
 	"dependencies": {
+		"chalk": "^3.0.0",
+		"dayjs": "^1.8.19",
+		"deep-object-diff": "^1.1.0",
 		"fs-extra": "^8.1.0",
-		"lodash": "^4.17.15"
+		"lodash": "^4.17.15",
+		"variable-diff": "^2.0.1"
 	},
 	"config": {
 		"commitizen": {

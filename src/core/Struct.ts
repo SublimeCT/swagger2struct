@@ -85,7 +85,7 @@ export class €structClassName€Struct extends Struct {
         const fields: { [name: string]: StructModel } = {}
         for (const k in model) {
             const field: ApiModel = model[k]
-            let val = null
+            let val: string | number | null = null
             switch (field.type) {
                 case 'integer': val = 0; break
                 case 'string': val = ''; break
